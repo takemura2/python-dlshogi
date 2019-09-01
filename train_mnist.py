@@ -8,6 +8,8 @@ from chainer import datasets, iterators, optimizers, serializers
 
 import argparse
 
+# test
+
 # ネットワーク定義
 class MLP(Chain):
     def __init__(self, n_units):
