@@ -1,4 +1,6 @@
-﻿import numpy as np
+#!/usr/bin/env python
+
+import numpy as np
 import chainer
 from chainer import Chain
 import chainer.functions as F
@@ -7,8 +9,10 @@ from chainer import cuda, Variable
 from chainer import datasets, iterators, optimizers, serializers
 
 import argparse
+import sys
 
-# test2
+# 実行方法
+# ./train_mnist.py --batchsize=100 --epoch=20 --unit=1000 --gpu=0 --initmodel=mlp.model --resume=mlp.state
 
 # ネットワーク定義
 class MLP(Chain):
@@ -32,7 +36,7 @@ parser.add_argument('--epoch', '-e', type=int, default=20,
                     help='Number of sweeps over the dataset to train')
 parser.add_argument('--unit', '-u', default=1000, type=int,
                     help='number of units')
-parser.add_argument('--gpu', '-g', type=int, default=-1,
+parser.add_argument('--gpu', '-g', type=int, default=0,
                     help='GPU ID (negative value indicates CPU)')
 parser.add_argument('--initmodel', '-m', default='',
                     help='Initialize the model from given file')
@@ -44,6 +48,8 @@ print('GPU: {}'.format(args.gpu))
 print('# unit: {}'.format(args.unit))
 print('# Minibatch-size: {}'.format(args.batchsize))
 print('# epoch: {}'.format(args.epoch))
+
+# sys.exit(0)
 
 # モデルの作成
 model = MLP(args.unit)
@@ -64,6 +70,9 @@ if args.initmodel:
 if args.resume:
     print('Load optimizer state from', args.resume)
     serializers.load_npz(args.resume, optimizer)
+
+
+# sys.exit(0)
 
 # MNISTデータセットを読み込み
 train, test = datasets.get_mnist()
