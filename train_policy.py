@@ -17,6 +17,15 @@ import re
 
 import logging
 
+# 棋譜リストファイルから局面のポジションと指し手を読み込みトレーニングする
+# 実行方法
+# 
+# 試しにトレーニング1000件、テスト100件で動作確認する
+# python train_policy.py kifu_list_train_1000.txt kifu_list_test_100.txt --eval_interval=100 --initmodel=model/model_policy --resume=model/state_policy --log=logs/train_policy.log --batchsize=32 --test_batchsize=512 --epoch=1 --lr=0.01
+#
+# 全トレーニング
+# python train_policy.py kifu_list_train.txt kifu_list_test.txt --eval_interval=100 --log=logs/train_policy.log --batchsize=32 --test_batchsize=512 --epoch=3 --lr=0.01
+
 parser = argparse.ArgumentParser()
 parser.add_argument('kifulist_train', type=str, help='train kifu list')
 parser.add_argument('kifulist_test', type=str, help='test kifu list')

@@ -21,6 +21,8 @@ class PolicyNetwork(Chain):
             self.l10=L.Convolution2D(in_channels = ch, out_channels = ch, ksize = 3, pad = 1)
             self.l11=L.Convolution2D(in_channels = ch, out_channels = ch, ksize = 3, pad = 1)
             self.l12=L.Convolution2D(in_channels = ch, out_channels = ch, ksize = 3, pad = 1)
+
+            #最後は9*9のマスにMOVE_DIRECTION_LABEL_NUMのフィルターをかます
             self.l13=L.Convolution2D(in_channels = ch, out_channels = MOVE_DIRECTION_LABEL_NUM, ksize = 1, nobias = True)
             self.l13_bias=L.Bias(shape=(9*9*MOVE_DIRECTION_LABEL_NUM))
 

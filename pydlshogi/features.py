@@ -5,18 +5,24 @@ import copy
 from pydlshogi.common import *
 
 def make_input_features(piece_bb, occupied, pieces_in_hand):
+    # 駒ごとにチャンネルを作成する
+    # チャンネル数= 104 
+    # 内訳 (駒の種類8 + 成り駒6 + 持ち駒) * 2 
+     
     features = []
     for color in shogi.COLORS:
-        # board pieces
+        # 駒
         for piece_type in shogi.PIECE_TYPES_WITH_NONE[1:]:
+            # 自分の各駒のbb (例えば自分の歩のある場所のマス)
             bb = piece_bb[piece_type] & occupied[color]
             feature = np.zeros(9*9)
             for pos in shogi.SQUARES:
+                # 駒があったらフラグを立てる
                 if bb & shogi.BB_SQUARES[pos] > 0:
                     feature[pos] = 1
             features.append(feature.reshape((9, 9)))
 
-        # pieces in hand
+        # 持ち駒
         for piece_type in range(1, 8):
             for n in range(shogi.MAX_PIECES_IN_HAND[piece_type]):
                 if piece_type in pieces_in_hand[color] and n < pieces_in_hand[color][piece_type]:
@@ -40,6 +46,8 @@ def make_input_features_from_board(board):
     return make_input_features(piece_bb, occupied, pieces_in_hand)
 
 def make_output_label(move, color):
+    #指し手を返す
+
     move_to = move.to_square
     move_from = move.from_square
 
@@ -53,8 +61,11 @@ def make_output_label(move, color):
     if move_from is not None:
         to_y, to_x = divmod(move_to, 9)
         from_y, from_x = divmod(move_from, 9)
+
+        # 移動差
         dir_x = to_x - from_x
         dir_y = to_y - from_y
+        
         if dir_y < 0 and dir_x == 0:
             move_direction = UP
         elif dir_y == -2 and dir_x == -1:

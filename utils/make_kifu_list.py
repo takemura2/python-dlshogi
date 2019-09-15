@@ -2,6 +2,10 @@
 import os
 import random
 
+# 棋譜ファイル一覧ファイルを作成する
+# --ratioオプションでトレーニングデータの比率を指定 
+# 実行方法 python make_kifu_list.py /home/takemura/develop/python/shogi/data/2016/ kifu_list --ratio=0.9
+#
 parser = argparse.ArgumentParser()
 parser.add_argument('dir', type=str)
 parser.add_argument('filename', type=str)

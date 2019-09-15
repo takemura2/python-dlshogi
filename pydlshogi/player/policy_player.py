@@ -12,9 +12,11 @@ from pydlshogi.network.policy import *
 from pydlshogi.player.base_player import *
 
 def greedy(logits):
+    # 確率が最大の手を選ぶ(グリーディー戦略)
     return logits.index(max(logits))
 
 def boltzmann(logits, temperature):
+    # 確率に応じて手を選ぶ(ソフトマックス戦略)
     logits /= temperature
     logits -= logits.max()
     probabilities = np.exp(logits)
@@ -24,7 +26,7 @@ def boltzmann(logits, temperature):
 class PolicyPlayer(BasePlayer):
     def __init__(self):
         super().__init__()
-        self.modelfile = r'H:\src\python-dlshogi\model\model_policy'
+        self.modelfile = '/home/takemura/develop/python/shogi/python-dlshogi/model/model_policy'
         self.model = None
 
     def usi(self):
@@ -48,9 +50,11 @@ class PolicyPlayer(BasePlayer):
             print('bestmove resign')
             return
 
+        # 盤面からインプットを作成
         features = make_input_features_from_board(self.board)
         x = Variable(cuda.to_gpu(np.array([features], dtype=np.float32)))
 
+        # 誤差逆伝播不要モードでフォワード実行
         with chainer.no_backprop_mode():
             y = self.model(x)
 
