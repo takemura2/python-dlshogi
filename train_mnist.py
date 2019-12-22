@@ -15,18 +15,21 @@ import sys
 # ./train_mnist.py --batchsize=100 --epoch=20 --unit=1000 --gpu=0 --initmodel=mlp.model --resume=mlp.state
 
 # ネットワーク定義
+
+
 class MLP(Chain):
     def __init__(self, n_units):
         super(MLP, self).__init__()
         with self.init_scope():
-            self.l1 = L.Linear(None, n_units) # 入力層
-            self.l2 = L.Linear(None, n_units) # 中間層
+            self.l1 = L.Linear(None, n_units)  # 入力層
+            self.l2 = L.Linear(None, n_units)  # 中間層
             self.l3 = L.Linear(None, 10)      # 出力層
 
     def __call__(self, x):
         h1 = F.relu(self.l1(x))
         h2 = F.relu(self.l2(h1))
         return self.l3(h2)
+
 
 # 引数の定義
 parser = argparse.ArgumentParser(description='example: MNIST')

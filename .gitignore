@@ -244,3 +244,10 @@ __pycache__/
 *.egg-info/
 .cache/
 /log*
+
+# model
+#*.model
+#*.state
+
+# data
+# *.pickle

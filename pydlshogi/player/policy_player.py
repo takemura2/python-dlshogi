@@ -4,16 +4,18 @@ from chainer import serializers
 from chainer import cuda, Variable
 import chainer.functions as F
 
-import shogi
+# import shogi
 
-from pydlshogi.common import *
-from pydlshogi.features import *
-from pydlshogi.network.policy import *
-from pydlshogi.player.base_player import *
+# import pydlshogi.common as COMMON
+import pydlshogi.features as FEATURES
+from pydlshogi.network.policy import PolicyNetwork
+from pydlshogi.player.base_player import BasePlayer
+
 
 def greedy(logits):
     # 確率が最大の手を選ぶ(グリーディー戦略)
     return logits.index(max(logits))
+
 
 def boltzmann(logits, temperature):
     # 確率に応じて手を選ぶ(ソフトマックス戦略)
@@ -22,6 +24,7 @@ def boltzmann(logits, temperature):
     probabilities = np.exp(logits)
     probabilities /= probabilities.sum()
     return np.random.choice(len(logits), p=probabilities)
+
 
 class PolicyPlayer(BasePlayer):
     def __init__(self):
@@ -51,7 +54,7 @@ class PolicyPlayer(BasePlayer):
             return
 
         # 盤面からインプットを作成
-        features = make_input_features_from_board(self.board)
+        features = FEATURES.make_input_features_from_board(self.board)
         x = Variable(cuda.to_gpu(np.array([features], dtype=np.float32)))
 
         # 誤差逆伝播不要モードでフォワード実行
@@ -66,17 +69,18 @@ class PolicyPlayer(BasePlayer):
         legal_logits = []
         for move in self.board.legal_moves:
             # ラベルに変換
-            label = make_output_label(move, self.board.turn)
+            label = FEATURES.make_output_label(move, self.board.turn)
             # 合法手とその指し手の確率(logits)を格納
             legal_moves.append(move)
             legal_logits.append(logits[label])
             # 確率を表示
-            print('info string {:5} : {:.5f}'.format(move.usi(), probabilities[label]))
-            
+            print('info string {:5} : {:.5f}'.format(
+                move.usi(), probabilities[label]))
+
         # 確率が最大の手を選ぶ(グリーディー戦略)
         selected_index = greedy(legal_logits)
         # 確率に応じて手を選ぶ(ソフトマックス戦略)
-        #selected_index = boltzmann(np.array(legal_logits, dtype=np.float32), 0.5)
+        # selected_index = boltzmann(np.array(legal_logits, dtype=np.float32), 0.5)
         bestmove = legal_moves[selected_index]
 
         print('bestmove', bestmove.usi())

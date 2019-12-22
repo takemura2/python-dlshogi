@@ -20,19 +20,28 @@ import logging
 parser = argparse.ArgumentParser()
 parser.add_argument('kifulist_train', type=str, help='train kifu list')
 parser.add_argument('kifulist_test', type=str, help='test kifu list')
-parser.add_argument('--batchsize', '-b', type=int, default=32, help='Number of positions in each mini-batch')
-parser.add_argument('--test_batchsize', type=int, default=512, help='Number of positions in each test mini-batch')
-parser.add_argument('--epoch', '-e', type=int, default=1, help='Number of epoch times')
-parser.add_argument('--model', type=str, default='model/model_policy_value', help='model file name')
-parser.add_argument('--state', type=str, default='model/state_policy_value', help='state file name')
-parser.add_argument('--initmodel', '-m', default='', help='Initialize the model from given file')
-parser.add_argument('--resume', '-r', default='', help='Resume the optimization from snapshot')
+parser.add_argument('--batchsize', '-b', type=int, default=32,
+                    help='Number of positions in each mini-batch')
+parser.add_argument('--test_batchsize', type=int, default=512,
+                    help='Number of positions in each test mini-batch')
+parser.add_argument('--epoch', '-e', type=int, default=1,
+                    help='Number of epoch times')
+parser.add_argument('--model', type=str,
+                    default='model/model_policy_value', help='model file name')
+parser.add_argument('--state', type=str,
+                    default='model/state_policy_value', help='state file name')
+parser.add_argument('--initmodel', '-m', default='',
+                    help='Initialize the model from given file')
+parser.add_argument('--resume', '-r', default='',
+                    help='Resume the optimization from snapshot')
 parser.add_argument('--log', default=None, help='log file path')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
-parser.add_argument('--eval_interval', '-i', type=int, default=1000, help='eval interval')
+parser.add_argument('--eval_interval', '-i', type=int,
+                    default=1000, help='eval interval')
 args = parser.parse_args()
 
-logging.basicConfig(format='%(asctime)s\t%(levelname)s\t%(message)s', datefmt='%Y/%m/%d %H:%M:%S', filename=args.log, level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s\t%(levelname)s\t%(message)s',
+                    datefmt='%Y/%m/%d %H:%M:%S', filename=args.log, level=logging.DEBUG)
 
 model = PolicyValueNetwork()
 model.to_gpu()
@@ -83,6 +92,8 @@ logging.info('train position num = {}'.format(len(positions_train)))
 logging.info('test position num = {}'.format(len(positions_test)))
 
 # mini batch
+
+
 def mini_batch(positions, i, batchsize):
     mini_batch_data = []
     mini_batch_move = []
@@ -96,6 +107,7 @@ def mini_batch(positions, i, batchsize):
     return (Variable(cuda.to_gpu(np.array(mini_batch_data, dtype=np.float32))),
             Variable(cuda.to_gpu(np.array(mini_batch_move, dtype=np.int32))),
             Variable(cuda.to_gpu(np.array(mini_batch_win, dtype=np.int32).reshape((-1, 1)))))
+
 
 def mini_batch_for_test(positions, batchsize):
     mini_batch_data = []
@@ -111,12 +123,14 @@ def mini_batch_for_test(positions, batchsize):
             Variable(cuda.to_gpu(np.array(mini_batch_move, dtype=np.int32))),
             Variable(cuda.to_gpu(np.array(mini_batch_win, dtype=np.int32).reshape((-1, 1)))))
 
+
 # train
 logging.info('start training')
 itr = 0
 sum_loss = 0
 for e in range(args.epoch):
-    positions_train_shuffled = random.sample(positions_train, len(positions_train))
+    positions_train_shuffled = random.sample(
+        positions_train, len(positions_train))
 
     itr_epoch = 0
     sum_loss_epoch = 0
@@ -125,7 +139,8 @@ for e in range(args.epoch):
         y1, y2 = model(x)
 
         model.cleargrads()
-        loss = F.softmax_cross_entropy(y1, t1) + F.sigmoid_cross_entropy(y2, t2)
+        loss = F.softmax_cross_entropy(
+            y1, t1) + F.sigmoid_cross_entropy(y2, t2)
         loss.backward()
         optimizer.update()
 
@@ -136,7 +151,8 @@ for e in range(args.epoch):
 
         # print train loss and test accuracy
         if optimizer.t % args.eval_interval == 0:
-            x, t1, t2 = mini_batch_for_test(positions_test, args.test_batchsize)
+            x, t1, t2 = mini_batch_for_test(
+                positions_test, args.test_batchsize)
             y1, y2 = model(x)
             logging.info('epoch = {}, iteration = {}, loss = {}, accuracy = {}, {}'.format(
                 optimizer.epoch + 1, optimizer.t, sum_loss / itr,
@@ -158,7 +174,7 @@ for e in range(args.epoch):
     logging.info('epoch = {}, iteration = {}, train loss avr = {}, test accuracy = {}, {}'.format(
         optimizer.epoch + 1, optimizer.t, sum_loss_epoch / itr_epoch,
         sum_test_accuracy1 / itr_test, sum_test_accuracy2 / itr_test))
-    
+
     optimizer.new_epoch()
 
 logging.info('save the model')
