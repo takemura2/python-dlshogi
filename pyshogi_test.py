@@ -1,7 +1,5 @@
 import shogi
 
-board = shogi.Board()
-
 
 def print_legal_moves():
     print(f'合法手数:{len(board.legal_moves)}')
@@ -83,6 +81,7 @@ def move(normal_move_str):
     print("\n" * 3)
 
 
+board = shogi.Board()
 print('対局開始')
 # print(board.kif_str())
 move('7776')
