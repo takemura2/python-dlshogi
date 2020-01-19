@@ -1,5 +1,19 @@
 from pydlshogi.player.policy_player_webapi import PolicyPlayer
 import time
+import shogi
+
+n = 1000
+print("処理開始")
+start = time.time()
+for i in range(n):
+    board = shogi.Board()
+    board.set_sfen(
+        "lnsgkg1nl/1r3s1b1/ppppp2pp/5pp2/9/2P4P1/PP1PPPP1P/1B3S1R1/LNSGKG1NL b - 7")
+
+elapsed_time = time.time() - start
+print(f"処理時間:{elapsed_time}秒")
+print(f"１インスタンス生成時間:{elapsed_time/n}")
+
 
 print("初期化開始")
 start = time.time()
