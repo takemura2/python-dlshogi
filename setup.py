@@ -10,7 +10,8 @@ setup(
     description='たけむら将棋',
     license='MIT',
     keywords='game shogi deeplearning',
-    packages=find_packages("pydlshogi"),
+    packages=find_packages('pydlshogi'),
+    package_dir={'': 'pydlshogi'},
     install_requires=['cupy == 7.0.0',
                       'chainer == 7.0.0',
                       'python-shogi == 1.0.9'
