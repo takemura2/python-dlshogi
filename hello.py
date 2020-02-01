@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
+import os
 
-packages = find_packages('pydlshogi')
-
-print(packages)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+print(current_dir)

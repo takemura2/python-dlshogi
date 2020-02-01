@@ -6,6 +6,7 @@ import chainer.functions as F
 import shogi
 import pydlshogi.features as FEATURES
 from pydlshogi.network.policy import PolicyNetwork
+from pydlshogi.model_data import get_model_file_path
 
 
 class PolicyPlayer():
@@ -14,10 +15,14 @@ class PolicyPlayer():
     """
 
     def __init__(self,
+                 model_file=None,
                  strategy="boltzmann",
                  debug_level=0):
         """
             Args:
+                model_file トレーニング済みのモデルファイル
+
+
                 strategy (str): 指し手戦略 
                     greedy:確率が最大の手を選ぶ
                     boltzmann:確率に応じて手を選ぶ(ソフトマックス戦略)
@@ -28,10 +33,19 @@ class PolicyPlayer():
                     2:指し手予測確率を表示
 
         """
+
+        if model_file is None:
+            # モデルの指定がない場合は規定のモデルを使用
+            _model_file = get_model_file_path('model_policy_value')
+        else:
+            _model_file = model_file
+
+        print(f"ネットワーク初期化 model_file={_model_file}")
+
         self.board = shogi.Board()  # type:shogi.Board
         self.strategy = strategy
         self.debug_level = debug_level
-        self.modelfile = '/home/takemura/develop/python/shogi/python-dlshogi/model/model_policy'
+        self.modelfile = _model_file
         self.model = PolicyNetwork()
         self.model.to_gpu()
         serializers.load_npz(self.modelfile, self.model)
