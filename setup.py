@@ -4,12 +4,22 @@ _package_name = 'pydlshogi'
 
 _version = '1.0.0'
 
+# パッケージを配列で取得
 _packages = find_packages(
     where='./',
     exclude=[
         'utils'
     ]
 )
+
+
+def load_requires_from_file(filepath):
+    '''
+    requirements.txtからdependencyを取得
+    '''
+    with open(filepath) as fp:
+        return [pkg_name.strip() for pkg_name in fp.readlines()]
+
 
 setup(
     name=_package_name,
@@ -22,10 +32,7 @@ setup(
     keywords='game shogi deeplearning',
     packages=_packages,
     package_data={'pydlshogi': ['model_data/*']},
-    install_requires=['cupy == 7.0.0',
-                      'chainer == 7.0.0',
-                      'python-shogi == 1.0.9'
-                      ],
+    install_requires=load_requires_from_file('requirements.txt'),
     scripts=[],
 
 )
