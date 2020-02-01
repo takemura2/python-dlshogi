@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+from setuptools import setup, find_packages
 
-# 実行方法
-# train_mnist.py --batchsize=100 --epoch=20 --unit=1000 --gpu=0
+packages = find_packages('pydlshogi')
 
-print('hello3')
+print(packages)
